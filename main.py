@@ -81,3 +81,83 @@ while not game_end:
                 snake_pos["y_change"] = snake_speed
     # очиститка экрана
     display.fill((0,0,0))
+    # Dmitriy Shatunov
+    # движение змеиных хвостов
+    ltx = snake_pos["x"]
+    lty = snake_pos["y"]
+ 
+    for i,v in enumerate(snake_tails):
+        _ltx = snake_tails[i][0]
+        _lty = snake_tails[i][1]
+ 
+        snake_tails[i][0] = ltx
+        snake_tails[i][1] = lty
+ 
+        ltx = _ltx
+        lty = _lty
+ 
+    # визуализация хвотов змейки
+    for t in snake_tails:
+        pygame.draw.rect(display, colors["snake_tail"], [
+            t[0],
+            t[1],
+            snake_size[0],
+            snake_size[1]])
+ 
+    # визуализация головы змеи
+    snake_pos["x"] += snake_pos["x_change"]
+    snake_pos["y"] += snake_pos["y_change"]
+ 
+    # телепорт змеи, если та вышла за пределы
+    if(snake_pos["x"] < -snake_size[0]):
+        snake_pos["x"] = width
+ 
+    elif(snake_pos["x"] > width):
+        snake_pos["x"] = 0
+ 
+    elif(snake_pos["y"] < -snake_size[1]):
+        snake_pos["y"] = height
+ 
+    elif(snake_pos["y"] > height):
+        snake_pos["y"] = 0
+ 
+    pygame.draw.rect(display, colors["snake_head"], [
+        snake_pos["x"],
+        snake_pos["y"],
+        snake_size[0],
+        snake_size[1]])
+ 
+    # визуализация яблока
+    pygame.draw.rect(display, colors["apple"], [
+        food_pos["x"],
+        food_pos["y"],
+        food_size[0],
+        food_size[1]])
+ 
+    # столкнулась с яблоком = скушала
+    if(snake_pos["x"] == food_pos["x"]
+        and snake_pos["y"] == food_pos["y"]):
+        food_eaten += 1
+        snake_tails.append([food_pos["x"], food_pos["y"]])
+ 
+        food_pos = {
+            "x": round(random.randrange(0, width - snake_size[0]) / 10) * 10,
+            "y": round(random.randrange(0, height - snake_size[1]) / 10) * 10,
+        }
+ 
+    # столкнулась с хвостом = уменьшение змеи
+    for i,v in enumerate(snake_tails):
+        if(snake_pos["x"]+snake_pos["x_change"] == snake_tails[i][0]
+            and snake_pos["y"]+snake_pos["y_change"] == snake_tails[i][1]):
+            snake_tails = snake_tails[:i]
+            break
+ 
+    pygame.display.update()
+    
+    # количество кадров в секунду
+    clock.tick(30)
+    
+ 
+# выход
+pygame.quit()
+quit()
